@@ -92,6 +92,7 @@ const assistant = new Assistant({
         max_tokens: 2000,
       });
 
+      await setStatus("is typing...");
       await say(chatCompletion.choices[0].message.content);
     } catch (error) {
       console.error("Error in userMessage:", error);
