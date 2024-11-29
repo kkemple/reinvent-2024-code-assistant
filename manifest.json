@@ -51,12 +51,17 @@
       "title": "Code Assist",
       "description": "Get an answer about a code related question",
       "input_parameters": {
-        "question": {
-          "type": "string",
-          "title": "Question",
-          "description": "A coding question to get answered",
-          "is_required": true,
-          "name": "question"
+        "message_id": {
+          "type": "slack#/types/message_id",
+          "title": "Message ID",
+          "description": "The message the question was asked in.",
+          "is_required": true
+        },
+        "channel_id": {
+          "type": "slack#/types/channel_id",
+          "title": "Channel ID",
+          "description": "The channel the question was asked in",
+          "is_required": true
         }
       },
       "output_parameters": {

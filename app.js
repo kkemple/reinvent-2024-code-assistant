@@ -105,13 +105,20 @@ const assistant = new Assistant({
 app.assistant(assistant);
 
 // Set up custom function for assistant
-app.function("code_assist", async ({ inputs, complete, fail }) => {
+app.function("code_assist", async ({ client, inputs, complete, fail }) => {
   try {
-    const { question } = inputs;
+    const { channel_id, message_ts } = inputs;
+
+    const result = await client.conversations.history({
+      channel: channel_id,
+      latest: message_ts,
+      limit: 1,
+      inclusive: true,
+    });
 
     const messages = [
       { role: "system", content: DEFAULT_SYSTEM_CONTENT },
-      { role: "user", content: question },
+      { role: "user", content: result.messages[0].text },
     ];
 
     const chatCompletion = await hfClient.chatCompletion({
