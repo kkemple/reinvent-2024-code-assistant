@@ -26,49 +26,27 @@ When a prompt has Slack's special syntax like <@USER_ID> or <#CHANNEL_ID>, you m
 function convertMarkdownToSlack(markdown) {
   let text = markdown;
 
-  // First fix any code blocks that don't have proper newlines
-  text = text.replace(/([^\n])```/g, "$1\n```");
-  text = text.replace(/```([^\n])/g, "```\n$1");
-
-  // Handle code blocks - add proper spacing and newlines
-  text = text.replace(/```(\w+)?\n([\s\S]*?)\n```/g, (match, lang, code) => {
-    // Ensure code doesn't start or end with newline
+  // Add newlines around code blocks first
+  text = text.replace(/```([\s\S]*?)```/g, (match, code) => {
     code = code.trim();
-    // Return formatted block with newlines
-    return "\n\n```\n" + code + "\n```\n";
+    return "\n\n```\n" + code + "\n```\n\n";
   });
 
-  // Convert inline code
-  text = text.replace(/`([^`]+)`/g, "`$1`");
+  // Fix up any triple+ newlines to be double newlines
+  text = text.replace(/\n{3,}/g, "\n\n");
 
-  // Convert bold
+  // Remaining markdown conversions
+  text = text.replace(/`([^`]+)`/g, "`$1`");
   text = text.replace(/\*\*([^*]+)\*\*/g, "*$1*");
   text = text.replace(/__([^_]+)__/g, "*$1*");
-
-  // Convert italic
   text = text.replace(/\*([^*]+)\*/g, "_$1_");
   text = text.replace(/_([^_]+)_/g, "_$1_");
-
-  // Convert strikethrough
-  text = text.replace(/~~([^~]+)~~/, "~$1~");
-
-  // Convert blockquotes
+  text = text.replace(/~~([^~]+)~~/g, "~$1~");
   text = text.replace(/^>\s(.+)/gm, ">>>\n$1");
-
-  // Convert headers to bold
   text = text.replace(/^#{1,6}\s(.+)$/gm, "*$1*");
-
-  // Convert unordered lists
   text = text.replace(/^[\*\-\+]\s(.+)/gm, "• $1");
-
-  // Convert ordered lists
   text = text.replace(/^\d+\.\s(.+)/gm, "$1");
-
-  // Convert links
   text = text.replace(/\[([^\]]+)\]\(([^)]+)\)/g, "<$2|$1>");
-
-  // Clean up any multiple consecutive newlines
-  text = text.replace(/\n{3,}/g, "\n\n");
 
   return text;
 }
@@ -194,8 +172,6 @@ app.function("code_assist", async ({ client, inputs, complete, fail }) => {
         console.error(e);
       }
     }
-
-    console.log({ message_id, channel_id, messages });
 
     const chatCompletion = await hfClient.chatCompletion({
       model: "Qwen/Qwen2.5-Coder-32B-Instruct",
