@@ -1,0 +1,34 @@
+#code-questions channel prompts
+
+[Sarah Chen] Any tips for handling hot path optimization in our edge runtime? Seeing some memory pressure under high load.
+
+[Sarah Chen] What's everyone's take on using async iterators vs streams for processing large datasets at the edge? Getting mixed benchmark results.
+
+[James Wilson] How are folks handling cascading timeouts across service boundaries? Need to prevent resource exhaustion.
+
+[James Wilson] Anyone know a clean way to implement graceful shutdown for our edge workers when using custom signals?
+
+[Marcus Rodriguez] Hey team, one of our customers is asking about best practices for handling timeouts in their edge functions. Any suggestions?
+
+[Marcus Rodriguez] Customer asking about best practices for implementing retries at the edge without amplifying load during outages.
+
+
+DM with ai assistant in sunroof prompts
+
+[Sarah Chen] How can we implement concurrent batch processing for 10k requests/second in Rust while maintaining memory safety?
+
+[Sarah Chen] What's the best approach for reducing cold start times in our WebAssembly modules?
+
+[Sarah Chen] Can anyone help optimize our edge node latency? We're seeing inconsistent spikes.
+
+[James Wilson] What's the recommended pattern for handling partial failures when communicating with multiple upstream services?
+
+[James Wilson] Has anyone implemented distributed rate limiting using Redis across edge nodes?
+
+[James Wilson] Need help with circuit breaker implementation in TypeScript for handling degraded services.
+
+[Marcus Rodriguez] How should we handle frame buffering for real-time video processing at the edge?
+
+[Marcus Rodriguez] What's the best way to implement secure key rotation without service interruption?
+
+[Marcus Rodriguez] Looking for best practices on aggregating error reports across distributed edge nodes.
