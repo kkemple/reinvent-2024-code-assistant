@@ -20,7 +20,7 @@ const hfClient = new HfInference(process.env.HUGGINGFACE_API_KEY);
 const DEFAULT_SYSTEM_CONTENT = `You're an AI assistant specialized in answering questions about code.
 You'll analyze code-related questions and provide clear, accurate responses.
 When you include markdown text, convert them to Slack compatible ones.
-When you include code examles, convert them to Slack compatible ones.
+When you include code examles, convert them to Slack compatible ones. (There must be an empty line before a code block.)
 When a prompt has Slack's special syntax like <@USER_ID> or <#CHANNEL_ID>, you must keep them as-is in your response.`;
 
 // Create the assistant
@@ -107,13 +107,13 @@ app.assistant(assistant);
 // Set up custom function for assistant
 app.function("code_assist", async ({ client, inputs, complete, fail }) => {
   try {
-    const { channel_id, message_ts } = inputs;
+    const { channel_id, message_id } = inputs;
     let messages;
 
     try {
       const result = await client.conversations.history({
         channel: channel_id,
-        latest: message_ts,
+        latest: message_id,
         limit: 1,
         inclusive: true,
       });
@@ -129,7 +129,7 @@ app.function("code_assist", async ({ client, inputs, complete, fail }) => {
         await client.conversations.join({ channel: channel_id });
         const result = await client.conversations.history({
           channel: channel_id,
-          latest: message_ts,
+          latest: message_id,
           limit: 1,
           inclusive: true,
         });
@@ -143,7 +143,7 @@ app.function("code_assist", async ({ client, inputs, complete, fail }) => {
       }
     }
 
-    console.log({ message_ts, channel_id, messages });
+    console.log({ message_id, channel_id, messages });
 
     const chatCompletion = await hfClient.chatCompletion({
       model: "Qwen/Qwen2.5-Coder-32B-Instruct",
