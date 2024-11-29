@@ -31,8 +31,6 @@ const assistant = new Assistant({
         "Hi! I'm your coding assistant. Ask me any questions about code!",
       );
 
-      await saveThreadContext();
-
       const prompts = [
         {
           title: "Code Example",
