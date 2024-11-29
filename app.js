@@ -112,7 +112,7 @@ const assistant = new Assistant({
         userMessage,
       ];
 
-      const chatCompletion = await hfClient.chatCompletion({
+      const modelResponse = await hfClient.chatCompletion({
         model: "Qwen/Qwen2.5-Coder-32B-Instruct",
         messages,
         max_tokens: 2000,
@@ -120,7 +120,7 @@ const assistant = new Assistant({
 
       await setStatus("is typing...");
       await say(
-        convertMarkdownToSlack(chatCompletion.choices[0].message.content),
+        convertMarkdownToSlack(modelResponse.choices[0].message.content),
       );
     } catch (error) {
       console.error("Error in userMessage:", error);
@@ -173,7 +173,7 @@ app.function("code_assist", async ({ client, inputs, complete, fail }) => {
       }
     }
 
-    const chatCompletion = await hfClient.chatCompletion({
+    const modelResponse = await hfClient.chatCompletion({
       model: "Qwen/Qwen2.5-Coder-32B-Instruct",
       messages,
       max_tokens: 2000,
@@ -182,7 +182,7 @@ app.function("code_assist", async ({ client, inputs, complete, fail }) => {
     await complete({
       outputs: {
         message: convertMarkdownToSlack(
-          chatCompletion.choices[0].message.content,
+          modelResponse.choices[0].message.content,
         ),
       },
     });
