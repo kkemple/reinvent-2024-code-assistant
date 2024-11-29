@@ -152,7 +152,7 @@ app.function("code_assist", async ({ client, inputs, complete, fail }) => {
     });
 
     await complete({
-      outputs: { response: chatCompletion.choices[0].message.content },
+      outputs: { message: chatCompletion.choices[0].message.content },
     });
   } catch (error) {
     console.error(error);
