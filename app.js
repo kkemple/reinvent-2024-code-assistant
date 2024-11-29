@@ -134,8 +134,6 @@ app.function("code_assist", async ({ client, inputs, complete, fail }) => {
           inclusive: true,
         });
 
-        console.log({ message_ts, channel_id, message: result.messages[0] });
-
         messages = [
           { role: "system", content: DEFAULT_SYSTEM_CONTENT },
           { role: "user", content: result.messages[0].text },
@@ -144,6 +142,8 @@ app.function("code_assist", async ({ client, inputs, complete, fail }) => {
         console.error(e);
       }
     }
+
+    console.log({ message_ts, channel_id, message: result.messages[0] });
 
     const chatCompletion = await hfClient.chatCompletion({
       model: "Qwen/Qwen2.5-Coder-32B-Instruct",
