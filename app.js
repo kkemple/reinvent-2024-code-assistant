@@ -143,7 +143,7 @@ app.function("code_assist", async ({ client, inputs, complete, fail }) => {
       }
     }
 
-    console.log({ message_ts, channel_id, message: result.messages[0] });
+    console.log({ message_ts, channel_id, messages });
 
     const chatCompletion = await hfClient.chatCompletion({
       model: "Qwen/Qwen2.5-Coder-32B-Instruct",
