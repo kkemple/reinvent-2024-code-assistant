@@ -134,6 +134,8 @@ app.function("code_assist", async ({ client, inputs, complete, fail }) => {
           inclusive: true,
         });
 
+        console.log({ message_ts, channel_id, message: result.messages[0] });
+
         messages = [
           { role: "system", content: DEFAULT_SYSTEM_CONTENT },
           { role: "user", content: result.messages[0].text },
