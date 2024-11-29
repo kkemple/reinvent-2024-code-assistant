@@ -26,12 +26,16 @@ When a prompt has Slack's special syntax like <@USER_ID> or <#CHANNEL_ID>, you m
 function convertMarkdownToSlack(markdown) {
   let text = markdown;
 
-  // Handle code blocks - must add newline before, and ensure backticks are on own lines
-  text = text.replace(/```(\w+)?\n([\s\S]*?)```/g, (match, lang, code) => {
+  // First fix any code blocks that don't have proper newlines
+  text = text.replace(/([^\n])```/g, "$1\n```");
+  text = text.replace(/```([^\n])/g, "```\n$1");
+
+  // Handle code blocks - add proper spacing and newlines
+  text = text.replace(/```(\w+)?\n([\s\S]*?)\n```/g, (match, lang, code) => {
     // Ensure code doesn't start or end with newline
     code = code.trim();
     // Return formatted block with newlines
-    return "\n\n```\n" + code + "\n```";
+    return "\n\n```\n" + code + "\n```\n";
   });
 
   // Convert inline code
@@ -62,6 +66,9 @@ function convertMarkdownToSlack(markdown) {
 
   // Convert links
   text = text.replace(/\[([^\]]+)\]\(([^)]+)\)/g, "<$2|$1>");
+
+  // Clean up any multiple consecutive newlines
+  text = text.replace(/\n{3,}/g, "\n\n");
 
   return text;
 }
