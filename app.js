@@ -23,6 +23,44 @@ When you include markdown text, convert them to Slack compatible ones.
 When you include code examles, convert them to Slack compatible ones. (There must be an empty line before a code block.)
 When a prompt has Slack's special syntax like <@USER_ID> or <#CHANNEL_ID>, you must keep them as-is in your response.`;
 
+function convertMarkdownToSlack(markdown) {
+  let text = markdown;
+
+  // Convert code blocks
+  text = text.replace(/```(\w+)?\n([\s\S]*?)```/g, "```$2```");
+
+  // Convert inline code
+  text = text.replace(/`([^`]+)`/g, "`$1`");
+
+  // Convert bold
+  text = text.replace(/\*\*([^*]+)\*\*/g, "*$1*");
+  text = text.replace(/__([^_]+)__/g, "*$1*");
+
+  // Convert italic
+  text = text.replace(/\*([^*]+)\*/g, "_$1_");
+  text = text.replace(/_([^_]+)_/g, "_$1_");
+
+  // Convert strikethrough
+  text = text.replace(/~~([^~]+)~~/, "~$1~");
+
+  // Convert blockquotes
+  text = text.replace(/^>\s(.+)/gm, ">>>\n$1");
+
+  // Convert headers to bold
+  text = text.replace(/^#{1,6}\s(.+)$/gm, "*$1*");
+
+  // Convert unordered lists
+  text = text.replace(/^[\*\-\+]\s(.+)/gm, "• $1");
+
+  // Convert ordered lists
+  text = text.replace(/^\d+\.\s(.+)/gm, "$1");
+
+  // Convert links
+  text = text.replace(/\[([^\]]+)\]\(([^)]+)\)/g, "<$2|$1>");
+
+  return text;
+}
+
 // Create the assistant
 const assistant = new Assistant({
   threadStarted: async ({ say, setSuggestedPrompts }) => {
@@ -91,7 +129,9 @@ const assistant = new Assistant({
       });
 
       await setStatus("is typing...");
-      await say(chatCompletion.choices[0].message.content);
+      await say(
+        convertMarkdownToSlack(chatCompletion.choices[0].message.content),
+      );
     } catch (error) {
       console.error("Error in userMessage:", error);
       await say(
@@ -152,7 +192,11 @@ app.function("code_assist", async ({ client, inputs, complete, fail }) => {
     });
 
     await complete({
-      outputs: { message: chatCompletion.choices[0].message.content },
+      outputs: {
+        message: convertMarkdownToSlack(
+          chatCompletion.choices[0].message.content,
+        ),
+      },
     });
   } catch (error) {
     console.error(error);
