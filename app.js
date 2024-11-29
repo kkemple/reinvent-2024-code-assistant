@@ -106,6 +106,31 @@ const assistant = new Assistant({
 // Register the assistant with the app
 app.assistant(assistant);
 
+// Set up custom function for assistant
+app.function("code_assist", async ({ inputs, complete, fail }) => {
+  try {
+    const { question } = inputs;
+
+    const messages = [
+      { role: "system", content: DEFAULT_SYSTEM_CONTENT },
+      { role: "user", content: question },
+    ];
+
+    const chatCompletion = await hfClient.chatCompletion({
+      model: "Qwen/Qwen2.5-Coder-32B-Instruct",
+      messages,
+      max_tokens: 2000,
+    });
+
+    await complete({
+      outputs: { response: chatCompletion.choices[0].message.content },
+    });
+  } catch (error) {
+    console.error(error);
+    fail({ error: `Failed to complete the step: ${error}` });
+  }
+});
+
 // Start the app
 (async () => {
   try {
