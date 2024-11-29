@@ -52,7 +52,7 @@
       "description": "Get an answer about a code related question",
       "input_parameters": {
         "message_id": {
-          "type": "slack#/types/message_id",
+          "type": "string",
           "title": "Message ID",
           "description": "The message the question was asked in.",
           "is_required": true

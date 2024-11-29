@@ -108,18 +108,40 @@ app.assistant(assistant);
 app.function("code_assist", async ({ client, inputs, complete, fail }) => {
   try {
     const { channel_id, message_ts } = inputs;
+    let messages;
 
-    const result = await client.conversations.history({
-      channel: channel_id,
-      latest: message_ts,
-      limit: 1,
-      inclusive: true,
-    });
+    try {
+      const result = await client.conversations.history({
+        channel: channel_id,
+        latest: message_ts,
+        limit: 1,
+        inclusive: true,
+      });
 
-    const messages = [
-      { role: "system", content: DEFAULT_SYSTEM_CONTENT },
-      { role: "user", content: result.messages[0].text },
-    ];
+      messages = [
+        { role: "system", content: DEFAULT_SYSTEM_CONTENT },
+        { role: "user", content: result.messages[0].text },
+      ];
+    } catch (e) {
+      // If the Assistant is not in the channel it's being asked about,
+      // have it join the channel and then retry the API call
+      if (e.data.error === "not_in_channel") {
+        await client.conversations.join({ channel: channel_id });
+        const result = await client.conversations.history({
+          channel: channel_id,
+          latest: message_ts,
+          limit: 1,
+          inclusive: true,
+        });
+
+        messages = [
+          { role: "system", content: DEFAULT_SYSTEM_CONTENT },
+          { role: "user", content: result.messages[0].text },
+        ];
+      } else {
+        console.error(e);
+      }
+    }
 
     const chatCompletion = await hfClient.chatCompletion({
       model: "Qwen/Qwen2.5-Coder-32B-Instruct",
